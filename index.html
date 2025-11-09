@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>YouTube Clone — HTML & CSS</title>
+  <style>
+    /* Reset + base */
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial;color:#0f172a;background:#0f172a;}
+    a{color:inherit;text-decoration:none}
+
+    /* Layout */
+    .app{display:grid;grid-template-columns:260px 1fr;grid-template-rows:64px 1fr;min-height:100vh}
+    header{grid-column:1/-1;display:flex;align-items:center;gap:16px;padding:10px 18px;background:#0b1220;border-bottom:1px solid rgba(255,255,255,0.03)}
+
+    /* Left sidebar */
+    .sidebar{grid-row:2;background:#071025;padding:18px;border-right:1px solid rgba(255,255,255,0.02);overflow:auto}
+    .logo{display:flex;align-items:center;gap:10px;font-weight:700;color:#fff}
+    .logo svg{width:34px;height:34px}
+    .nav{margin-top:18px;display:flex;flex-direction:column;gap:8px}
+    .nav a{display:flex;align-items:center;gap:12px;padding:10px;border-radius:8px;color:#cbd5e1}
+    .nav a:hover{background:rgba(255,255,255,0.02);color:#fff}
+    .nav svg{width:20px;height:20px;fill:currentColor}
+
+    /* Search */
+    .search{display:flex;align-items:center;gap:10px;flex:1;max-width:760px;margin:0 auto}
+    .search input{flex:1;padding:10px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:#0b1220;color:#e6eef8}
+    .search button{padding:10px 14px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:#0b1220;color:#e6eef8;cursor:pointer}
+
+    /* Header right */
+    .actions{display:flex;align-items:center;gap:12px;margin-left:auto}
+    .avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#ffb1b1,#ffc78f);display:flex;align-items:center;justify-content:center;font-weight:700;color:#031025}
+
+    /* Main content */
+    main{grid-column:2;grid-row:2;padding:18px;overflow:auto}
+    .hero{display:grid;grid-template-columns:1fr 320px;gap:18px;margin-bottom:18px}
+    .player{background:#020617;border-radius:12px;padding:12px;border:1px solid rgba(255,255,255,0.02)}
+    .player iframe{width:100%;height:420px;border-radius:8px;border:0}
+    .player h2{color:#e6eef8;margin:10px 0;font-size:18px}
+    .meta{display:flex;align-items:center;justify-content:space-between;color:#94a3b8}
+
+    .suggestions{background:#071025;border-radius:12px;padding:12px;height:100%;overflow:auto}
+    .suggestion{display:flex;gap:10px;padding:8px;border-radius:8px;align-items:center;color:#cbd5e1}
+    .suggestion img{width:120px;height:68px;object-fit:cover;border-radius:6px}
+    .suggestion p{font-size:14px}
+
+    /* Grid of videos */
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:18px}
+    .card{background:#071025;border-radius:12px;padding:8px;border:1px solid rgba(255,255,255,0.02);color:#cbd5e1}
+    .thumb{position:relative;border-radius:8px;overflow:hidden}
+    .thumb img{width:100%;height:150px;object-fit:cover;display:block}
+    .duration{position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,0.7);padding:2px 6px;border-radius:4px;font-size:12px;color:#fff}
+    .info{display:flex;gap:10px;margin-top:8px}
+    .ch-avatar{width:36px;height:36px;border-radius:50%;background:#0b1220;flex-shrink:0}
+    .meta-text{flex:1}
+    .meta-text h3{color:#e6eef8;font-size:15px;margin-bottom:6px}
+    .meta-text p{color:#94a3b8;font-size:13px}
+
+    /* Footer / small details */
+    .muted{color:#6b7280}
+
+    /* Responsive */
+    @media (max-width:900px){
+      .app{grid-template-columns:1fr;grid-template-rows:64px auto 1fr}
+      .sidebar{display:none}
+      header{padding:8px}
+      .hero{grid-template-columns:1fr}
+      .player iframe{height:240px}
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="logo">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 6.5C3 5.7 3.7 5 4.5 5h15c.8 0 1.5.7 1.5 1.5v11c0 .8-.7 1.5-1.5 1.5h-15C3.7 19 3 18.3 3 17.5v-11z" fill="#FF0000"/><path d="M10 9.5l6 3.5-6 3.5v-7z" fill="#fff"/></svg>
+        YouTube Clone
+      </div>
+
+      <div class="search">
+        <input type="text" placeholder="Search" aria-label="Search videos">
+        <button aria-label="Search button">Search</button>
+      </div>
+
+      <div class="actions">
+        <button title="Create">＋</button>
+        <button title="Notifications">🔔</button>
+        <div class="avatar">SP</div>
+      </div>
+    </header>
+
+    <aside class="sidebar">
+      <nav class="nav">
+        <a href="#"><svg viewBox="0 0 24 24"><path d="M3 12l18-9v18L3 12z"/></svg> Home</a>
+        <a href="#"><svg viewBox="0 0 24 24"><path d="M3 6h18v2H3zM3 11h18v2H3zM3 16h18v2H3z"/></svg> Shorts</a>
+        <a href="#"><svg viewBox="0 0 24 24"><path d="M12 2L3 6v6c0 5 3.8 9.7 9 10 5.2-.3 9-5 9-10V6l-9-4z"/></svg> Subscriptions</a>
+        <hr style="border:none;border-top:1px solid rgba(255,255,255,0.02);margin:12px 0">
+        <a href="#">Library</a>
+        <a href="#">History</a>
+        <a href="#">Your videos</a>
+      </nav>
+    </aside>
+
+    <main>
+      <section class="hero">
+        <div class="player">
+          <!-- Embedded demo video: replace src with your own or keep for preview -->
+          <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Demo video" allowfullscreen></iframe>
+          <h2>Demo Video Title — Clean HTML & CSS YouTube Clone</h2>
+          <div class="meta">
+            <div>
+              <strong>1,234,567 views</strong> • <span class="muted">2 days ago</span>
+            </div>
+            <div class="muted">Like 👍  •  Share ↗</div>
+          </div>
+        </div>
+
+        <aside class="suggestions">
+          <div style="font-weight:700;color:#e6eef8;margin-bottom:8px">Up next</div>
+          <div class="suggestion">
+            <img src="https://picsum.photos/seed/a/240/140" alt="thumb">
+            <div>
+              <p style="font-weight:600">Suggested video title</p>
+              <p class="muted" style="font-size:13px;margin-top:6px">Channel name • 123K views</p>
+            </div>
+          </div>
+          <div class="suggestion">
+            <img src="https://picsum.photos/seed/b/240/140" alt="thumb">
+            <div>
+              <p style="font-weight:600">Another suggestion</p>
+              <p class="muted" style="font-size:13px;margin-top:6px">Creator • 98K views</p>
+            </div>
+          </div>
+        </aside>
+      </section>
+
+      <section>
+        <h3 style="color:#e6eef8;margin-bottom:12px">Recommended</h3>
+        <div class="grid">
+          <!-- Video card x 8 (you can duplicate as needed) -->
+          <article class="card">
+            <div class="thumb">
+              <img src="https://picsum.photos/seed/1/600/400" alt="thumb">
+              <div class="duration">12:34</div>
+            </div>
+            <div class="info">
+              <div class="ch-avatar"></div>
+              <div class="meta-text">
+                <h3>How to build a responsive layout with CSS Grid</h3>
+                <p class="muted">DevChannel • 234K views • 3 days ago</p>
+              </div>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="thumb">
+              <img src="https://picsum.photos/seed/2/600/400" alt="thumb">
+              <div class="duration">5:11</div>
+            </div>
+            <div class="info">
+              <div class="ch-avatar"></div>
+              <div class="meta-text">
+                <h3>CSS animations for modern UI</h3>
+                <p class="muted">UI Tricks • 89K views • 1 week ago</p>
+              </div>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="thumb">
+              <img src="https://picsum.photos/seed/3/600/400" alt="thumb">
+              <div class="duration">2:22</div>
+            </div>
+            <div class="info">
+              <div class="ch-avatar"></div>
+              <div class="meta-text">
+                <h3>Quick tips: typography & spacing</h3>
+                <p class="muted">Type Lab • 45K views • 4 days ago</p>
+              </div>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="thumb">
+              <img src="https://picsum.photos/seed/4/600/400" alt="thumb">
+              <div class="duration">22:10</div>
+            </div>
+            <div class="info">
+              <div class="ch-avatar"></div>
+              <div class="meta-text">
+                <h3>Complete CSS Grid course</h3>
+                <p class="muted">Grid Master • 1.2M views • 6 months ago</p>
+              </div>
+            </div>
+          </article>
+
+          <!-- duplicate cards to fill grid -->
+          <article class="card">
+            <div class="thumb">
+              <img src="https://picsum.photos/seed/5/600/400" alt="thumb">
+              <div class="duration">8:03</div>
+            </div>
+            <div class="info">
+              <div class="ch-avatar"></div>
+              <div class="meta-text">
+                <h3>Practical accessibility tips</h3>
+                <p class="muted">A11y Channel • 66K views • 2 weeks ago</p>
+              </div>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="thumb">
+              <img src="https://picsum.photos/seed/6/600/400" alt="thumb">
+              <div class="duration">14:55</div>
+            </div>
+            <div class="info">
+              <div class="ch-avatar"></div>
+              <div class="meta-text">
+                <h3>Design systems explained</h3>
+                <p class="muted">DesignNote • 320K views • 1 month ago</p>
+              </div>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="thumb">
+              <img src="https://picsum.photos/seed/7/600/400" alt="thumb">
+              <div class="duration">3:45</div>
+            </div>
+            <div class="info">
+              <div class="ch-avatar"></div>
+              <div class="meta-text">
+                <h3>Small UI tweaks that matter</h3>
+                <p class="muted">MicroUX • 12K views • 5 days ago</p>
+              </div>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="thumb">
+              <img src="https://picsum.photos/seed/8/600/400" alt="thumb">
+              <div class="duration">11:11</div>
+            </div>
+            <div class="info">
+              <div class="ch-avatar"></div>
+              <div class="meta-text">
+                <h3>Modern header patterns</h3>
+                <p class="muted">HeaderHub • 78K views • 3 weeks ago</p>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
